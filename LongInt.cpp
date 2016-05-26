@@ -16,16 +16,16 @@ using namespace std;
 /// <returns>
 /// istream object
 ///</returns>
-istream &operator>>( istream &in, LongInt &rhs )
+istream &operator >> (istream &in, LongInt &rhs)
 {
 	string b;
 	in >> b;
 	int j = b.length();
-	for( int i = 0; i < j; i++ )
+	for (int i = 0; i < j; i++)
 	{
-		if( i == 0 && b[0] == '-' )
+		if (i == 0 && b[0] == '-')
 			rhs.negative = true;
-		else if( isdigit(b[i]) )
+		else if (isdigit(b[i]))
 			rhs.digits.addBack(b[i]);
 	}
 	return in;
@@ -39,25 +39,25 @@ istream &operator>>( istream &in, LongInt &rhs )
 /// <returns>
 /// ostream object containing the characters that represent the param
 ///</returns>
-ostream &operator<<( ostream &out, const LongInt &rhs )
+ostream &operator<<(ostream &out, const LongInt &rhs)
 {
 	LongInt newLongInt = rhs;
 	newLongInt.remove0s();
-	if( newLongInt.digits.isEmpty() )
+	if (newLongInt.digits.isEmpty())
 	{
 		out << "0";
 		return out;
 	}
-	if( newLongInt.negative )
+	if (newLongInt.negative)
 	{
-		if( !newLongInt.digits.isEmpty() )	
+		if (!newLongInt.digits.isEmpty())
 			out << "-";
-		while( !newLongInt.digits.isEmpty() )
+		while (!newLongInt.digits.isEmpty())
 			out << newLongInt.digits.removeFront();
 	}
 	else
 	{
-		while( !newLongInt.digits.isEmpty() )
+		while (!newLongInt.digits.isEmpty())
 			out << newLongInt.digits.removeFront();
 	}
 	return out;
@@ -69,17 +69,17 @@ ostream &operator<<( ostream &out, const LongInt &rhs )
 /// with digits contained in the param
 /// </summary>
 /// <param name="str">The STR.</param>
-LongInt::LongInt( const string str )
+LongInt::LongInt(const string str)
 {
 	int j = str.length();
 	string mystr = str;
 	negative = false;
-	for( int i = 0; i < j; i++ )
+	for (int i = 0; i < j; i++)
 	{
-		if( i == 0 && str[0] == '-' )
+		if (i == 0 && str[0] == '-')
 			negative = true;
-		else if( isdigit( mystr[i] ) )
-			digits.addBack( mystr[i] );
+		else if (isdigit(mystr[i]))
+			digits.addBack(mystr[i]);
 	}
 }
 
@@ -89,7 +89,7 @@ LongInt::LongInt( const string str )
 /// that is equivalent to the param
 /// </summary>
 /// <param name="rhs">The RHS.</param>
-LongInt::LongInt( const LongInt &rhs )
+LongInt::LongInt(const LongInt &rhs)
 {
 	negative = rhs.negative;
 	digits = rhs.digits;
@@ -99,7 +99,7 @@ LongInt::LongInt( const LongInt &rhs )
 /// Default constructor
 /// Initializes a new instance of the <see cref="LongInt" /> class.
 /// </summary>
-LongInt::LongInt( )
+LongInt::LongInt()
 {
 	negative = false;
 }
@@ -108,12 +108,12 @@ LongInt::LongInt( )
 /// <summary>
 /// Finalizes an instance of the <see cref="LongInt" /> class.
 /// </summary>
-LongInt::~LongInt( )
+LongInt::~LongInt()
 {
 	digits.clear();
 }
 
-LongInt LongInt::operator/ ( const LongInt &rhs ) const
+LongInt LongInt::operator/ (const LongInt &rhs) const
 {
 	LongInt newLongInt("0");
 	LongInt reset("0");
@@ -122,34 +122,34 @@ LongInt LongInt::operator/ ( const LongInt &rhs ) const
 	LongInt lhsInt = *this;
 	LongInt rhsDInt = rhs;
 	LongInt intermediate;
-	if ( !lhsInt.negative && rhsDInt.negative || lhsInt.negative && !rhsDInt.negative )
+	if (!lhsInt.negative && rhsDInt.negative || lhsInt.negative && !rhsDInt.negative)
 		myNeg = true;
 	lhsInt.negative = false;
 	rhsDInt.negative = false;
-	while ( lhsInt - rhsDInt >= reset )
+	while (lhsInt - rhsDInt >= reset)
 	{
 		newLongInt = newLongInt + sub;
 		lhsInt = lhsInt - rhsDInt;
 	}
-	if ( myNeg )
+	if (myNeg)
 		newLongInt.negative = true;
-	return newLongInt; 
+	return newLongInt;
 }
 
-LongInt LongInt::operator* (const LongInt & rhs ) const
+LongInt LongInt::operator* (const LongInt & rhs) const
 {
 	LongInt newLongInt("0");
 	LongInt intermediateLongInt("0");
 	LongInt reset("1");
-       LongInt lhs = *this;
+	LongInt lhs = *this;
 	LongInt rhsD = rhs;
 	LongInt add("1");
 	bool myNeg = false;
-	if ( (!lhs.negative && rhsD.negative) || (lhs.negative && !rhsD.negative) )
+	if ((!lhs.negative && rhsD.negative) || (lhs.negative && !rhsD.negative))
 		myNeg = true;
 	lhs.negative = false;
 	rhsD.negative = false;
-	while( rhsD > reset )
+	while (rhsD > reset)
 	{
 		newLongInt = newLongInt + lhs;
 		rhsD = rhsD - add;
@@ -157,9 +157,9 @@ LongInt LongInt::operator* (const LongInt & rhs ) const
 		//cout << rhsD << "rhsD" << endl;
 		//cout << (rhsD > reset) << endl;
 	}
-       if ( myNeg )
+	if (myNeg)
 		newLongInt.negative = true;
-	return newLongInt; 
+	return newLongInt;
 }
 
 // Arithmetic binary operators
@@ -170,68 +170,68 @@ LongInt LongInt::operator* (const LongInt & rhs ) const
 /// <returns>
 /// A LongInt that is equivalent to this LongInt + the param
 ///</returns>
-LongInt LongInt::operator+( const LongInt &rhs ) const
+LongInt LongInt::operator+(const LongInt &rhs) const
 {
 	LongInt newLongInt;
 	Deque<char> lhs = digits;
 	Deque<char> rhsD = rhs.digits;
 	int carry = 0;
-	int minLength = 
-		( digits.size( ) <= rhs.digits.size( ) ) ? digits.size( ) : rhs.digits.size( );
+	int minLength =
+		(digits.size() <= rhs.digits.size()) ? digits.size() : rhs.digits.size();
 
-	if( ( !negative && !rhs.negative ) || ( negative && rhs.negative ) )
+	if ((!negative && !rhs.negative) || (negative && rhs.negative))
 	{
-		for ( int length = minLength; length > 0; length-- )
+		for (int length = minLength; length > 0; length--)
 		{
-			newLongInt.digits.addFront( ( ( ( lhs.getBack() - 48 ) + ( rhsD.getBack() - 48 ) + carry ) % 10 ) + 48 );
-			carry = ( ( lhs.removeBack() - 48 ) + ( rhsD.removeBack() - 48 ) ) / 10;
+			newLongInt.digits.addFront((((lhs.getBack() - 48) + (rhsD.getBack() - 48) + carry) % 10) + 48);
+			carry = ((lhs.removeBack() - 48) + (rhsD.removeBack() - 48)) / 10;
 		}
-		while( !lhs.isEmpty() )
+		while (!lhs.isEmpty())
 		{
-			int newer = ( ( ( lhs.getBack() - 48 ) + carry) );
-			if( newer >= 10 )
+			int newer = (((lhs.getBack() - 48) + carry));
+			if (newer >= 10)
 			{
 				carry = 1;
-				newLongInt.digits.addFront( newer + 38 );
+				newLongInt.digits.addFront(newer + 38);
 				lhs.removeBack();
 			}
-			else 
+			else
 			{
-				newLongInt.digits.addFront( ( ( lhs.removeBack() - 48 ) + carry ) + 48 );
+				newLongInt.digits.addFront(((lhs.removeBack() - 48) + carry) + 48);
 				carry = 0;
-			}		
+			}
 		}
-		while( !rhsD.isEmpty() )
+		while (!rhsD.isEmpty())
 		{
-			int newer = ( ( rhsD.getBack() - 48 ) + carry );
-			if( newer >=10 )
+			int newer = ((rhsD.getBack() - 48) + carry);
+			if (newer >= 10)
 			{
 				carry = 1;
-				newLongInt.digits.addFront( newer + 38 );
+				newLongInt.digits.addFront(newer + 38);
 				rhsD.removeBack();
 			}
-			else 
+			else
 			{
-				newLongInt.digits.addFront( ( ( rhsD.removeBack() - 48 ) + carry )  + 48 );
+				newLongInt.digits.addFront(((rhsD.removeBack() - 48) + carry) + 48);
 				carry = 0;
 			}
 		}
-		if( carry > 0 )
-			newLongInt.digits.addFront( 49 );
-		if( negative && rhs.negative )
+		if (carry > 0)
+			newLongInt.digits.addFront(49);
+		if (negative && rhs.negative)
 			newLongInt.negative = true;
 	}
-	else if( !negative && rhs.negative )
+	else if (!negative && rhs.negative)
 	{
 		LongInt anotherLongInt = *this;
 		newLongInt = rhs;
 		newLongInt.negative = false;
 		LongInt thirdLongInt = anotherLongInt - newLongInt;
-		if( newLongInt > anotherLongInt )
+		if (newLongInt > anotherLongInt)
 			thirdLongInt.negative = true;
 		newLongInt = thirdLongInt;
 	}
-	else if( negative && !rhs.negative )
+	else if (negative && !rhs.negative)
 	{
 		newLongInt = *this;
 		newLongInt.negative = false;
@@ -247,31 +247,31 @@ LongInt LongInt::operator+( const LongInt &rhs ) const
 /// <returns>
 ///  A LongInt equivalent to this LongInt - the param
 ///</returns>
-LongInt LongInt::operator-( const LongInt &rhs ) const
+LongInt LongInt::operator-(const LongInt &rhs) const
 {
 	LongInt newLongInt;
 	Deque<char> lhs = digits;
 	Deque<char> rhsD = rhs.digits;
 	int borrow = 0;
 	int nextDigit = 0;
-	int minLength = 
-		( digits.size( ) <= rhs.digits.size( ) ) ? digits.size( ) : rhs.digits.size( );
+	int minLength =
+		(digits.size() <= rhs.digits.size()) ? digits.size() : rhs.digits.size();
 
-	if( !negative && !rhs.negative )
+	if (!negative && !rhs.negative)
 	{
-		if( *this < rhs )
+		if (*this < rhs)
 		{
 			lhs = rhs.digits;
 			rhsD = digits;
 			newLongInt.negative = true;
 		}
-		for ( int length = minLength; length > 0; length-- )
+		for (int length = minLength; length > 0; length--)
 		{
-			nextDigit = ( (lhs.removeBack() - 48 ) - ( rhsD.removeBack() - 48 ) - borrow );
+			nextDigit = ((lhs.removeBack() - 48) - (rhsD.removeBack() - 48) - borrow);
 			borrow = 0;
-			if( nextDigit < 0 )
+			if (nextDigit < 0)
 			{
-				if( lhs.isEmpty() || lhs.getBack() == 0 )
+				if (lhs.isEmpty() || lhs.getBack() == 0)
 				{
 					nextDigit = -nextDigit;
 					newLongInt.negative = true;
@@ -282,43 +282,43 @@ LongInt LongInt::operator-( const LongInt &rhs ) const
 					borrow = 1;
 				}
 			}
-			newLongInt.digits.addFront( nextDigit + 48 );
+			newLongInt.digits.addFront(nextDigit + 48);
 		}
-		while( !lhs.isEmpty() )
+		while (!lhs.isEmpty())
 		{
-			if( (lhs.getBack() - borrow) < 0 )
+			if ((lhs.getBack() - borrow) < 0)
 			{
-				borrow = 1; 
-				newLongInt.digits.addFront( 48 );
+				borrow = 1;
+				newLongInt.digits.addFront(48);
 				lhs.removeBack();
 			}
 			else
 			{
-				newLongInt.digits.addFront( (lhs.removeBack() - borrow) );
+				newLongInt.digits.addFront((lhs.removeBack() - borrow));
 				borrow = 0;
 			}
 		}
-		while( !rhsD.isEmpty() )
+		while (!rhsD.isEmpty())
 		{
-			if(( rhsD.getBack() + borrow ) >= 10 )
+			if ((rhsD.getBack() + borrow) >= 10)
 			{
-				borrow = 1; 
-				newLongInt.digits.addFront( 48 );
+				borrow = 1;
+				newLongInt.digits.addFront(48);
 				rhsD.removeBack();
 			}
 			else
-			{	
-				newLongInt.digits.addFront( ( rhsD.removeBack() + borrow ) );
+			{
+				newLongInt.digits.addFront((rhsD.removeBack() + borrow));
 				borrow = 0;
 			}
 			newLongInt.negative = true;
 		}
-		if( borrow >= 1 )
+		if (borrow >= 1)
 		{
-			newLongInt.digits.addFront( 49 );
+			newLongInt.digits.addFront(49);
 		}
 	}
-	else if( negative && rhs.negative )
+	else if (negative && rhs.negative)
 	{
 		LongInt anotherLongInt = rhs;
 		anotherLongInt.negative = false;
@@ -326,14 +326,14 @@ LongInt LongInt::operator-( const LongInt &rhs ) const
 		newLongInt.negative = false;
 		newLongInt = anotherLongInt - newLongInt;
 	}
-	else if( !negative && rhs.negative )
+	else if (!negative && rhs.negative)
 	{
 		newLongInt = rhs;
 		LongInt anotherLongInt = *this;
 		newLongInt.negative = false;
 		newLongInt = newLongInt + anotherLongInt;
 	}
-	else if( negative && !rhs.negative )
+	else if (negative && !rhs.negative)
 	{
 		newLongInt = *this;
 		newLongInt.negative = false;
@@ -352,7 +352,7 @@ LongInt LongInt::operator-( const LongInt &rhs ) const
 /// <returns>
 /// A deep copy of the LongInt passed as a param
 ///</returns>
-const LongInt& LongInt::operator=( const LongInt &rhs )
+const LongInt& LongInt::operator=(const LongInt &rhs)
 {
 	digits = rhs.digits;
 	negative = rhs.negative;
@@ -367,47 +367,47 @@ const LongInt& LongInt::operator=( const LongInt &rhs )
 /// <returns>
 /// True if this LongInt is less than the param, false otherwise
 ///</returns>
-bool LongInt::operator< ( const LongInt & rhs ) const
+bool LongInt::operator< (const LongInt & rhs) const
 {
 	LongInt newLongInt = *this;
 	LongInt anotherLongInt = rhs;
-	if( negative && !rhs.negative )
+	if (negative && !rhs.negative)
 		return true;
-	else if( !negative && rhs.negative )
+	else if (!negative && rhs.negative)
 		return false;
-	else if( !negative && !rhs.negative )
+	else if (!negative && !rhs.negative)
 	{
 		newLongInt.remove0s();
 		anotherLongInt.remove0s();
-		if( newLongInt.digits.size() != anotherLongInt.digits.size() )
-			return ( newLongInt.digits.size() < anotherLongInt.digits.size() );
+		if (newLongInt.digits.size() != anotherLongInt.digits.size())
+			return (newLongInt.digits.size() < anotherLongInt.digits.size());
 		else
 		{
 			LongInt templ = newLongInt;
 			LongInt tempr = anotherLongInt;
-			while( !templ.digits.isEmpty() )
+			while (!templ.digits.isEmpty())
 			{
 				const int left = templ.digits.removeFront();
 				const int right = tempr.digits.removeFront();
-				if( left != right )
-					return ( left < right );
+				if (left != right)
+					return (left < right);
 			}
 		}
 	}
-	else if( negative && rhs.negative )
+	else if (negative && rhs.negative)
 	{
-		if( digits.size() != rhs.digits.size() )
-			return ( digits.size() > rhs.digits.size() );
+		if (digits.size() != rhs.digits.size())
+			return (digits.size() > rhs.digits.size());
 		else
 		{
 			LongInt templ = *this;
 			LongInt tempr = rhs;
-			while( !templ.digits.isEmpty() )
+			while (!templ.digits.isEmpty())
 			{
 				int left = templ.digits.removeFront();
 				int right = tempr.digits.removeFront();
-				if( left != right )
-					return ( left > right );
+				if (left != right)
+					return (left > right);
 			}
 		}
 	}
@@ -423,9 +423,9 @@ bool LongInt::operator< ( const LongInt & rhs ) const
 ///  true if this LongInt is less than or equal
 /// to the param, false otherwise
 ///</returns>
-bool LongInt::operator<=( const LongInt & rhs ) const
+bool LongInt::operator<=(const LongInt & rhs) const
 {
-	return ( *this == rhs || *this < rhs );
+	return (*this == rhs || *this < rhs);
 }
 
 /// <summary>
@@ -435,48 +435,48 @@ bool LongInt::operator<=( const LongInt & rhs ) const
 /// <returns>
 /// true if this LongInt is greater than the param, false otherwise
 ///</returns>
-bool LongInt::operator> ( const LongInt & rhs ) const
+bool LongInt::operator> (const LongInt & rhs) const
 {
-	if( negative && !rhs.negative )
+	if (negative && !rhs.negative)
 		return false;
-	else if( !negative && rhs.negative )
+	else if (!negative && rhs.negative)
 		return true;
-	else if( !negative && !rhs.negative )
+	else if (!negative && !rhs.negative)
 	{
-		if( digits.size() != rhs.digits.size() )
-			return ( digits.size() > rhs.digits.size() );
+		if (digits.size() != rhs.digits.size())
+			return (digits.size() > rhs.digits.size());
 		else
 		{
 			LongInt templ = *this;
 			LongInt tempr = rhs;
-			while( !templ.digits.isEmpty() )
+			while (!templ.digits.isEmpty())
 			{
 				int left = templ.digits.removeFront();
 				int right = tempr.digits.removeFront();
-				if( left != right )
-					return ( left > right );
+				if (left != right)
+					return (left > right);
 			}
 		}
 	}
-	else if( negative && rhs.negative )
+	else if (negative && rhs.negative)
 	{
-		if( digits.size() != rhs.digits.size() )
-			return ( digits.size() < rhs.digits.size() );
+		if (digits.size() != rhs.digits.size())
+			return (digits.size() < rhs.digits.size());
 		else
 		{
 			LongInt templ = *this;
 			LongInt tempr = rhs;
-			while( !templ.digits.isEmpty() )
+			while (!templ.digits.isEmpty())
 			{
 				int left = templ.digits.removeFront();
 				int right = tempr.digits.removeFront();
-				if( left != right )
-					return ( left < right );
+				if (left != right)
+					return (left < right);
 			}
 		}
 	}
 	return false;
-} 
+}
 
 /// <summary>
 /// Operator>= checks if this LongInt is greater than
@@ -487,9 +487,9 @@ bool LongInt::operator> ( const LongInt & rhs ) const
 /// true if this LongInt is greater than or equal to
 /// the param, false otherwise
 ///</returns>
-bool LongInt::operator>=( const LongInt & rhs ) const
+bool LongInt::operator>=(const LongInt & rhs) const
 {
-	return ( *this == rhs || *this > rhs );
+	return (*this == rhs || *this > rhs);
 }
 
 /// <summary>
@@ -499,27 +499,27 @@ bool LongInt::operator>=( const LongInt & rhs ) const
 /// <returns>
 /// true if this LongInt is equal to the param, false otherwise
 ///</returns>
-bool LongInt::operator==( const LongInt & rhs ) const
+bool LongInt::operator==(const LongInt & rhs) const
 {
-	if( negative && !rhs.negative )
+	if (negative && !rhs.negative)
 		return false;
-	else if( !negative && rhs.negative )
+	else if (!negative && rhs.negative)
 		return false;
-	else if( !negative && !rhs.negative || negative && rhs.negative )
+	else if (!negative && !rhs.negative || negative && rhs.negative)
 	{
-		if( digits.size() != rhs.digits.size() )
+		if (digits.size() != rhs.digits.size())
 			return false;
 		else
 		{
 			LongInt templ = *this;
 			LongInt tempr = rhs;
-			while( !templ.digits.isEmpty() )
+			while (!templ.digits.isEmpty())
 			{
 				int left = templ.digits.getFront();
 				int right = tempr.digits.getFront();
 				templ.digits.removeFront();
 				tempr.digits.removeFront();
-				if( left != right )
+				if (left != right)
 					return false;
 			}
 		}
@@ -534,9 +534,9 @@ bool LongInt::operator==( const LongInt & rhs ) const
 /// <returns>
 /// true if this LongInt does not equal the param, false otherwise
 ///</returns>
-bool LongInt::operator!=( const LongInt & rhs ) const
+bool LongInt::operator!=(const LongInt & rhs) const
 {
-	return !( *this == rhs );
+	return !(*this == rhs);
 }
 
 /// <summary>
@@ -545,11 +545,11 @@ bool LongInt::operator!=( const LongInt & rhs ) const
 /// </summary>
 void LongInt::remove0s()
 {
-	while( !digits.isEmpty() && digits.getFront() == '0' )
+	while (!digits.isEmpty() && digits.getFront() == '0')
 		digits.removeFront();
-	if( digits.isEmpty() )
-{
-	digits.addFront(48);
-	negative = false;
-}
+	if (digits.isEmpty())
+	{
+		digits.addFront(48);
+		negative = false;
+	}
 }

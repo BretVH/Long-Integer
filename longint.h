@@ -13,38 +13,38 @@ using namespace std;
 /// or subtracting LongInt objects 
 /// </summary>
 class LongInt {
-  friend istream &operator>>( istream &in, LongInt &rhs );
-  friend ostream &operator<<( ostream &out, const LongInt &rhs );
- public:
-  // Constructors
-  LongInt( const string str ); 
-  LongInt( const LongInt &rhs );
-  LongInt( );
+	friend istream &operator >> (istream &in, LongInt &rhs);
+	friend ostream &operator<<(ostream &out, const LongInt &rhs);
+public:
+	// Constructors
+	LongInt(const string str);
+	LongInt(const LongInt &rhs);
+	LongInt();
 
-  // Destructor
-  ~LongInt( );
+	// Destructor
+	~LongInt();
 
-  // Arithmetic binary operators
-  LongInt operator+( const LongInt &rhs ) const;
-  LongInt operator-( const LongInt &rhs ) const;
-  LongInt operator/( const LongInt &rhs ) const;
-  LongInt operator*( const LongInt &rhs ) const;
+	// Arithmetic binary operators
+	LongInt operator+(const LongInt &rhs) const;
+	LongInt operator-(const LongInt &rhs) const;
+	LongInt operator/(const LongInt &rhs) const;
+	LongInt operator*(const LongInt &rhs) const;
 
-  // assignment operators
-  const LongInt &operator=( const LongInt &rhs );
+	// assignment operators
+	const LongInt &operator=(const LongInt &rhs);
 
-  // Logical binary operators
-  bool operator< ( const LongInt & rhs ) const;
-  bool operator<=( const LongInt & rhs ) const;
-  bool operator> ( const LongInt & rhs ) const;
-  bool operator>=( const LongInt & rhs ) const;
-  bool operator==( const LongInt & rhs ) const;
-  bool operator!=( const LongInt & rhs ) const;
+	// Logical binary operators
+	bool operator< (const LongInt & rhs) const;
+	bool operator<=(const LongInt & rhs) const;
+	bool operator> (const LongInt & rhs) const;
+	bool operator>=(const LongInt & rhs) const;
+	bool operator==(const LongInt & rhs) const;
+	bool operator!=(const LongInt & rhs) const;
 
- private:
-  Deque<char> digits;
-  bool negative;
-  void remove0s( );
+private:
+	Deque<char> digits;
+	bool negative;
+	void remove0s();
 };
 
 #endif
