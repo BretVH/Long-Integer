@@ -45,6 +45,14 @@ private:
 	Deque<char> digits;
 	bool negative;
 	void remove0s();
+	int asciiCharToInt(const char c) const;
+	char oneDigitIntToAsciiChar(int a) const;
+	LongInt processAddened(int currentAddened, LongInt sum) const;
+	int calcCarry(int ten, int currentAddened) const;
+	int calcTest(Deque<char> minuend, int test) const;
+	int calcBorrow(Deque<char> minuend, int test) const;
+	bool isDiffNegative(Deque<char> minuend, int test) const;
+
 };
 
 #endif

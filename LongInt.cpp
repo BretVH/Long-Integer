@@ -18,15 +18,14 @@ using namespace std;
 ///</returns>
 istream &operator >> (istream &in, LongInt &rhs)
 {
-	string b;
-	in >> b;
-	int j = b.length();
-	for (int i = 0; i < j; i++)
+	string integerChars;
+	in >> integerChars;
+	for (int i = 0; i < integerChars.length(); i++)
 	{
-		if (i == 0 && b[0] == '-')
+		if (i == 0 && integerChars[0] == '-')
 			rhs.negative = true;
-		else if (isdigit(b[i]))
-			rhs.digits.addBack(b[i]);
+		else if (isdigit(integerChars[i]))
+			rhs.digits.addBack(integerChars[i]);
 	}
 	return in;
 }
@@ -41,24 +40,24 @@ istream &operator >> (istream &in, LongInt &rhs)
 ///</returns>
 ostream &operator<<(ostream &out, const LongInt &rhs)
 {
-	LongInt newLongInt = rhs;
-	newLongInt.remove0s();
-	if (newLongInt.digits.isEmpty())
+	LongInt output = rhs;
+	output.remove0s();
+	if (output.digits.isEmpty())
 	{
 		out << "0";
 		return out;
 	}
-	if (newLongInt.negative)
+	if (output.negative)
 	{
-		if (!newLongInt.digits.isEmpty())
+		if (!output.digits.isEmpty())
 			out << "-";
-		while (!newLongInt.digits.isEmpty())
-			out << newLongInt.digits.removeFront();
+		while (!output.digits.isEmpty())
+			out << output.digits.removeFront();
 	}
 	else
 	{
-		while (!newLongInt.digits.isEmpty())
-			out << newLongInt.digits.removeFront();
+		while (!output.digits.isEmpty())
+			out << output.digits.removeFront();
 	}
 	return out;
 }
@@ -68,19 +67,20 @@ ostream &operator<<(ostream &out, const LongInt &rhs)
 /// Initializes a new instance of the <see cref="LongInt" /> class.
 /// with digits contained in the param
 /// </summary>
-/// <param name="str">The STR.</param>
-LongInt::LongInt(const string str)
+/// <param name="longInteger">String representation of the LongInt.</param>
+LongInt::LongInt(const string longInteger)
 {
-	int j = str.length();
-	string mystr = str;
+	int j = longInteger.length();
+	string integerChars = longInteger;
 	negative = false;
 	for (int i = 0; i < j; i++)
 	{
-		if (i == 0 && str[0] == '-')
+		if (i == 0 && longInteger[0] == '-')
 			negative = true;
-		else if (isdigit(mystr[i]))
-			digits.addBack(mystr[i]);
+		else if (isdigit(integerChars[i]))
+			digits.addBack(integerChars[i]);
 	}
+	remove0s();
 }
 
 /// <summary>
@@ -115,51 +115,56 @@ LongInt::~LongInt()
 
 LongInt LongInt::operator/ (const LongInt &rhs) const
 {
-	LongInt newLongInt("0");
-	LongInt reset("0");
-	bool myNeg = false;
-	LongInt sub("1");
-	LongInt lhsInt = *this;
-	LongInt rhsDInt = rhs;
-	LongInt intermediate;
-	if (!lhsInt.negative && rhsDInt.negative || lhsInt.negative && !rhsDInt.negative)
-		myNeg = true;
-	lhsInt.negative = false;
-	rhsDInt.negative = false;
-	while (lhsInt - rhsDInt >= reset)
-	{
-		newLongInt = newLongInt + sub;
-		lhsInt = lhsInt - rhsDInt;
+	LongInt quotient("0");
+	LongInt zero("0");
+	bool isNegative = false;
+	LongInt one("1");
+	LongInt numerator = *this;
+	LongInt divisor = rhs;
+	if (!numerator.negative && divisor.negative || numerator.negative && !divisor.negative)
+		isNegative = true;
+	numerator.negative = false;
+	divisor.negative = false;
+	if (divisor == zero) {
+		//return 0 <-- hacky may have to think up something later
+		return quotient;
 	}
-	if (myNeg)
-		newLongInt.negative = true;
-	return newLongInt;
+	while (numerator >= divisor)
+	{
+		quotient = quotient + one;
+		numerator = numerator - divisor;
+	}
+	if (isNegative)
+		quotient.negative = true;
+	return quotient;
 }
-
+//very slow fix later...
 LongInt LongInt::operator* (const LongInt & rhs) const
 {
-	LongInt newLongInt("0");
-	LongInt intermediateLongInt("0");
-	LongInt reset("1");
-	LongInt lhs = *this;
-	LongInt rhsD = rhs;
-	LongInt add("1");
-	bool myNeg = false;
-	if ((!lhs.negative && rhsD.negative) || (lhs.negative && !rhsD.negative))
-		myNeg = true;
-	lhs.negative = false;
-	rhsD.negative = false;
-	while (rhsD > reset)
-	{
-		newLongInt = newLongInt + lhs;
-		rhsD = rhsD - add;
-		//cout << newLongInt << "newlongint" << endl;
-		//cout << rhsD << "rhsD" << endl;
-		//cout << (rhsD > reset) << endl;
+	LongInt product("0");
+	LongInt a = *this;
+	LongInt b = rhs;
+	LongInt one("1");
+	LongInt zero("0");
+	bool isNegative = false;
+	if ((!a.negative && b.negative) || (a.negative && !b.negative))
+		isNegative = true;
+	a.negative = false;
+	b.negative = false;
+	//try to speed up the calculation...
+	if (b > a) {
+		LongInt temp = b;
+		b = a;
+		a = temp;
 	}
-	if (myNeg)
-		newLongInt.negative = true;
-	return newLongInt;
+	while (b > zero)
+	{
+		product = product + a;
+		b = b - one;
+	}
+	if (isNegative)
+		product.negative = true;
+	return product;
 }
 
 // Arithmetic binary operators
@@ -172,72 +177,61 @@ LongInt LongInt::operator* (const LongInt & rhs) const
 ///</returns>
 LongInt LongInt::operator+(const LongInt &rhs) const
 {
-	LongInt newLongInt;
-	Deque<char> lhs = digits;
-	Deque<char> rhsD = rhs.digits;
+	LongInt sum;
+	Deque<char> addenedA = digits;
+	Deque<char> addenedB = rhs.digits;
 	int carry = 0;
-	int minLength =
-		(digits.size() <= rhs.digits.size()) ? digits.size() : rhs.digits.size();
-
+	//if both integers are negative or neither are negative then 
+	//ther is no change of sign in the sum
 	if ((!negative && !rhs.negative) || (negative && rhs.negative))
 	{
+		//The length of the sum must be at least as long as the 
+		//longest integer being summed.
+		int minLength = (addenedA.size() <= addenedB.size()) ? addenedA.size() : addenedB.size();
+		int ten = 10;
 		for (int length = minLength; length > 0; length--)
 		{
-			newLongInt.digits.addFront((((lhs.getBack() - 48) + (rhsD.getBack() - 48) + carry) % 10) + 48);
-			carry = ((lhs.removeBack() - 48) + (rhsD.removeBack() - 48)) / 10;
+			int a = asciiCharToInt(addenedA.removeBack());
+			int b = asciiCharToInt(addenedB.removeBack());
+			int digitToAdd = (a + b + carry) % ten;
+			digitToAdd = oneDigitIntToAsciiChar(digitToAdd);
+			sum.digits.addFront(digitToAdd);
+			carry = (a + b + carry) / ten;
 		}
-		while (!lhs.isEmpty())
+		while (!addenedA.isEmpty())
 		{
-			int newer = (((lhs.getBack() - 48) + carry));
-			if (newer >= 10)
-			{
-				carry = 1;
-				newLongInt.digits.addFront(newer + 38);
-				lhs.removeBack();
-			}
-			else
-			{
-				newLongInt.digits.addFront(((lhs.removeBack() - 48) + carry) + 48);
-				carry = 0;
-			}
+			int currentAddened = asciiCharToInt(addenedA.removeBack()) + carry;
+			carry = calcCarry(ten, currentAddened);
+			sum = processAddened(currentAddened, sum);
 		}
-		while (!rhsD.isEmpty())
+		while (!addenedB.isEmpty())
 		{
-			int newer = ((rhsD.getBack() - 48) + carry);
-			if (newer >= 10)
-			{
-				carry = 1;
-				newLongInt.digits.addFront(newer + 38);
-				rhsD.removeBack();
-			}
-			else
-			{
-				newLongInt.digits.addFront(((rhsD.removeBack() - 48) + carry) + 48);
-				carry = 0;
-			}
+			int currentAddened = asciiCharToInt(addenedB.removeBack()) + carry;
+			carry = calcCarry(ten, currentAddened);
+			sum = processAddened(currentAddened, sum);
 		}
 		if (carry > 0)
-			newLongInt.digits.addFront(49);
+			//use ascii value for the char '1'
+			sum.digits.addFront(49);
 		if (negative && rhs.negative)
-			newLongInt.negative = true;
+			sum.negative = true;
 	}
 	else if (!negative && rhs.negative)
 	{
-		LongInt anotherLongInt = *this;
-		newLongInt = rhs;
-		newLongInt.negative = false;
-		LongInt thirdLongInt = anotherLongInt - newLongInt;
-		if (newLongInt > anotherLongInt)
-			thirdLongInt.negative = true;
-		newLongInt = thirdLongInt;
+		LongInt minuend = *this;
+		LongInt subtrahend = rhs;
+		subtrahend.negative = false;
+		sum = minuend - subtrahend;
+		if (subtrahend > minuend)
+			sum.negative = true;
 	}
 	else if (negative && !rhs.negative)
 	{
-		newLongInt = *this;
-		newLongInt.negative = false;
-		newLongInt = rhs - newLongInt;
+		LongInt subtrahend = *this;
+		subtrahend.negative = false;
+		sum = rhs - subtrahend;
 	}
-	return newLongInt;
+	return sum;
 }
 
 /// <summary>
@@ -249,100 +243,84 @@ LongInt LongInt::operator+(const LongInt &rhs) const
 ///</returns>
 LongInt LongInt::operator-(const LongInt &rhs) const
 {
-	LongInt newLongInt;
-	Deque<char> lhs = digits;
-	Deque<char> rhsD = rhs.digits;
+	LongInt difference;
+	Deque<char> minuend = digits;
+	Deque<char> subtrahend = rhs.digits;
 	int borrow = 0;
 	int nextDigit = 0;
-	int minLength =
-		(digits.size() <= rhs.digits.size()) ? digits.size() : rhs.digits.size();
 
 	if (!negative && !rhs.negative)
 	{
 		if (*this < rhs)
 		{
-			lhs = rhs.digits;
-			rhsD = digits;
-			newLongInt.negative = true;
+			minuend = rhs.digits;
+			subtrahend = digits;
+			difference.negative = true;
 		}
-		for (int length = minLength; length > 0; length--)
+		while (minuend.getFront() == '0' && minuend.size() > 1) {
+			minuend.removeFront();
+		}
+		while (subtrahend.getFront() == '0' && subtrahend.size() > 1) {
+			subtrahend.removeFront();
+		}
+		for (int length = subtrahend.size(); length > 0; length--)
 		{
-			nextDigit = ((lhs.removeBack() - 48) - (rhsD.removeBack() - 48) - borrow);
+			int a = asciiCharToInt(minuend.removeBack());
+			int b = 0;
+			if (!subtrahend.isEmpty()) {
+				b = asciiCharToInt(subtrahend.removeBack());
+			}
+			nextDigit = a - b - borrow;
 			borrow = 0;
 			if (nextDigit < 0)
 			{
-				if (lhs.isEmpty() || lhs.getBack() == 0)
-				{
-					nextDigit = -nextDigit;
-					newLongInt.negative = true;
-				}
-				else
-				{
-					nextDigit += 10;
-					borrow = 1;
-				}
+				nextDigit = calcTest(minuend, nextDigit);
+				difference.negative = isDiffNegative(minuend, nextDigit);
+				borrow = calcBorrow(minuend, nextDigit);
 			}
-			newLongInt.digits.addFront(nextDigit + 48);
+			nextDigit = oneDigitIntToAsciiChar(nextDigit);
+			difference.digits.addFront(nextDigit);
 		}
-		while (!lhs.isEmpty())
+		while (!minuend.isEmpty())
 		{
-			if ((lhs.getBack() - borrow) < 0)
+			int test = asciiCharToInt(minuend.getBack()) - borrow;
+			borrow = 0;
+			if (test < 0)
 			{
-				borrow = 1;
-				newLongInt.digits.addFront(48);
-				lhs.removeBack();
+				test = calcTest(minuend, test);
+				difference.negative = isDiffNegative(minuend, test);
+				borrow = calcBorrow(minuend, test);				
 			}
-			else
-			{
-				newLongInt.digits.addFront((lhs.removeBack() - borrow));
-				borrow = 0;
-			}
-		}
-		while (!rhsD.isEmpty())
-		{
-			if ((rhsD.getBack() + borrow) >= 10)
-			{
-				borrow = 1;
-				newLongInt.digits.addFront(48);
-				rhsD.removeBack();
-			}
-			else
-			{
-				newLongInt.digits.addFront((rhsD.removeBack() + borrow));
-				borrow = 0;
-			}
-			newLongInt.negative = true;
-		}
-		if (borrow >= 1)
-		{
-			newLongInt.digits.addFront(49);
+			test = oneDigitIntToAsciiChar(test);
+			difference.digits.addFront(test);
+			minuend.removeBack();
 		}
 	}
 	else if (negative && rhs.negative)
 	{
-		LongInt anotherLongInt = rhs;
-		anotherLongInt.negative = false;
-		newLongInt = *this;
-		newLongInt.negative = false;
-		newLongInt = anotherLongInt - newLongInt;
+		LongInt longIntMinuend = rhs;
+		longIntMinuend.negative = false;
+		LongInt longIntSubtrahend = *this;
+		longIntSubtrahend.negative = false;
+		difference = longIntMinuend - longIntSubtrahend;
 	}
 	else if (!negative && rhs.negative)
 	{
-		newLongInt = rhs;
-		LongInt anotherLongInt = *this;
-		newLongInt.negative = false;
-		newLongInt = newLongInt + anotherLongInt;
+		LongInt addened = rhs;
+		addened.negative = false;
+		LongInt addendB = *this;
+		difference = addened + addendB;
 	}
 	else if (negative && !rhs.negative)
 	{
-		newLongInt = *this;
-		newLongInt.negative = false;
-		newLongInt = rhs + newLongInt;
-		newLongInt.negative = true;
+		LongInt addened = *this;
+		addened.negative = false;
+		difference = rhs + addened;
+		difference.negative = true;
 	}
-	return newLongInt;
+	difference.remove0s();
+	return difference;
 }
-
 
 // assignment operators
 /// <summary>
@@ -369,26 +347,26 @@ const LongInt& LongInt::operator=(const LongInt &rhs)
 ///</returns>
 bool LongInt::operator< (const LongInt & rhs) const
 {
-	LongInt newLongInt = *this;
-	LongInt anotherLongInt = rhs;
+	LongInt leftSide = *this;
+	LongInt rightSide = rhs;
 	if (negative && !rhs.negative)
 		return true;
 	else if (!negative && rhs.negative)
 		return false;
 	else if (!negative && !rhs.negative)
 	{
-		newLongInt.remove0s();
-		anotherLongInt.remove0s();
-		if (newLongInt.digits.size() != anotherLongInt.digits.size())
-			return (newLongInt.digits.size() < anotherLongInt.digits.size());
+		leftSide.remove0s();
+		rightSide.remove0s();
+		if (leftSide.digits.size() != rightSide.digits.size())
+			return (leftSide.digits.size() < rightSide.digits.size());
 		else
 		{
-			LongInt templ = newLongInt;
-			LongInt tempr = anotherLongInt;
-			while (!templ.digits.isEmpty())
+			LongInt tempLeft = leftSide;
+			LongInt tempRight = rightSide;
+			while (!tempLeft.digits.isEmpty())
 			{
-				const int left = templ.digits.removeFront();
-				const int right = tempr.digits.removeFront();
+				const int left = tempLeft.digits.removeFront();
+				const int right = tempRight.digits.removeFront();
 				if (left != right)
 					return (left < right);
 			}
@@ -400,12 +378,12 @@ bool LongInt::operator< (const LongInt & rhs) const
 			return (digits.size() > rhs.digits.size());
 		else
 		{
-			LongInt templ = *this;
-			LongInt tempr = rhs;
-			while (!templ.digits.isEmpty())
+			LongInt tempLeft = *this;
+			LongInt tempRight = rhs;
+			while (!tempLeft.digits.isEmpty())
 			{
-				int left = templ.digits.removeFront();
-				int right = tempr.digits.removeFront();
+				int left = tempLeft.digits.removeFront();
+				int right = tempRight.digits.removeFront();
 				if (left != right)
 					return (left > right);
 			}
@@ -447,12 +425,12 @@ bool LongInt::operator> (const LongInt & rhs) const
 			return (digits.size() > rhs.digits.size());
 		else
 		{
-			LongInt templ = *this;
-			LongInt tempr = rhs;
-			while (!templ.digits.isEmpty())
+			LongInt tempLeft = *this;
+			LongInt tempRight = rhs;
+			while (!tempLeft.digits.isEmpty())
 			{
-				int left = templ.digits.removeFront();
-				int right = tempr.digits.removeFront();
+				int left = tempLeft.digits.removeFront();
+				int right = tempRight.digits.removeFront();
 				if (left != right)
 					return (left > right);
 			}
@@ -464,12 +442,12 @@ bool LongInt::operator> (const LongInt & rhs) const
 			return (digits.size() < rhs.digits.size());
 		else
 		{
-			LongInt templ = *this;
-			LongInt tempr = rhs;
-			while (!templ.digits.isEmpty())
+			LongInt tempLeft = *this;
+			LongInt tempRight = rhs;
+			while (!tempLeft.digits.isEmpty())
 			{
-				int left = templ.digits.removeFront();
-				int right = tempr.digits.removeFront();
+				int left = tempLeft.digits.removeFront();
+				int right = tempRight.digits.removeFront();
 				if (left != right)
 					return (left < right);
 			}
@@ -511,14 +489,14 @@ bool LongInt::operator==(const LongInt & rhs) const
 			return false;
 		else
 		{
-			LongInt templ = *this;
-			LongInt tempr = rhs;
-			while (!templ.digits.isEmpty())
+			LongInt tempLeft = *this;
+			LongInt tempRight = rhs;
+			while (!tempLeft.digits.isEmpty())
 			{
-				int left = templ.digits.getFront();
-				int right = tempr.digits.getFront();
-				templ.digits.removeFront();
-				tempr.digits.removeFront();
+				int left = tempLeft.digits.getFront();
+				int right = tempRight.digits.getFront();
+				tempLeft.digits.removeFront();
+				tempRight.digits.removeFront();
 				if (left != right)
 					return false;
 			}
@@ -553,3 +531,88 @@ void LongInt::remove0s()
 		negative = false;
 	}
 }
+
+/// <summary>
+/// Converts asciiChar to integer, assuming the char is a digit 0-9.
+/// </summary>
+/// <param name="rhs">The char</param>
+/// <returns>
+/// integer value of char 0-9
+///</returns>
+int LongInt::asciiCharToInt(const char c) const
+{
+	//assume c is an ascii int
+	char copy = c;
+	return (int)copy - 48;
+}
+
+/// <summary>
+/// Converts a digit between 0-9, to an ascii char.
+/// </summary>
+/// <param name="rhs">The int</param>
+/// <returns>
+/// char 0-9
+///</returns>
+char LongInt::oneDigitIntToAsciiChar(int a) const
+{
+	return a + 48;
+}
+
+LongInt LongInt::processAddened(int currentAddened, LongInt sum) const
+{
+	int ten = 10;
+	if (currentAddened >= ten)
+	{
+		currentAddened -= ten;
+		currentAddened = oneDigitIntToAsciiChar(currentAddened);
+		sum.digits.addFront(currentAddened);
+	}
+	else
+	{
+		currentAddened = oneDigitIntToAsciiChar(currentAddened);
+		sum.digits.addFront(currentAddened);
+	}
+	return sum;
+}
+
+int LongInt::calcCarry(int ten, int currentAddened) const
+{
+	if (currentAddened >= ten)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int LongInt::calcTest(Deque<char> minuend, int test) const
+{
+	if (minuend.isEmpty())
+	{
+		return -test;
+	}
+	else
+	{
+		return test += 10;
+	}
+}
+
+int LongInt::calcBorrow(Deque<char> minuend, int test) const
+{
+	if (!minuend.isEmpty())
+	{
+		return 1;
+	}
+}
+
+bool LongInt::isDiffNegative(Deque<char> minuend, int test) const
+{
+	if (minuend.isEmpty())
+	{
+		return true;
+	}
+	return false;
+}
+
