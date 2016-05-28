@@ -52,7 +52,7 @@ private:
 	int calcTest(Deque<char> minuend, int test) const;
 	int calcBorrow(Deque<char> minuend, int test) const;
 	bool isDiffNegative(Deque<char> minuend, int test) const;
-
+	LongInt multiply(LongInt a, LongInt b) const;
 };
 
 #endif
