@@ -138,7 +138,7 @@ LongInt LongInt::operator/ (const LongInt &rhs) const
 		quotient.negative = true;
 	return quotient;
 }
-//very slow fix later...
+
 LongInt LongInt::operator* (const LongInt & rhs) const
 {
 	LongInt product("0");
@@ -157,11 +157,7 @@ LongInt LongInt::operator* (const LongInt & rhs) const
 		b = a;
 		a = temp;
 	}
-	while (b > zero)
-	{
-		product = product + a;
-		b = b - one;
-	}
+	product = multiply(a, b);
 	if (isNegative)
 		product.negative = true;
 	return product;
@@ -289,7 +285,7 @@ LongInt LongInt::operator-(const LongInt &rhs) const
 			{
 				test = calcTest(minuend, test);
 				difference.negative = isDiffNegative(minuend, test);
-				borrow = calcBorrow(minuend, test);				
+				borrow = calcBorrow(minuend, test);
 			}
 			test = oneDigitIntToAsciiChar(test);
 			difference.digits.addFront(test);
@@ -605,6 +601,7 @@ int LongInt::calcBorrow(Deque<char> minuend, int test) const
 	{
 		return 1;
 	}
+	return 0;
 }
 
 bool LongInt::isDiffNegative(Deque<char> minuend, int test) const
@@ -615,4 +612,42 @@ bool LongInt::isDiffNegative(Deque<char> minuend, int test) const
 	}
 	return false;
 }
+
+LongInt LongInt::multiply(LongInt a, LongInt b) const
+{
+	LongInt product("0");
+	LongInt temp("0");
+	LongInt zero("0");
+	int originalSize = b.digits.size();
+	for (int i = 0; i < originalSize; i++) {
+		product = product + temp;
+		temp = zero;
+		int carry = 0;
+		int currentDigit = asciiCharToInt(b.digits.removeBack());
+		Deque<char> tempDigits = a.digits;
+		for (int j = 0; j < a.digits.size(); j++) {
+			if (j == 0) {
+				for (int k = 0; k < i; k++) {
+					if (k == 0)
+						continue;
+					else
+						temp.digits.addBack('0');
+				}
+			}
+			int productOfDigits = asciiCharToInt(tempDigits.removeBack()) * currentDigit;
+			int digitToAdd = (productOfDigits + carry) % 10;
+			carry = (productOfDigits + carry) / 10;
+			if (i == 0 && j == 0) {
+				temp.digits.addFront(oneDigitIntToAsciiChar(digitToAdd));
+				temp.digits.removeBack();
+			}
+			else
+				temp.digits.addFront(oneDigitIntToAsciiChar(digitToAdd));
+		}
+		temp.digits.addFront(oneDigitIntToAsciiChar(carry));
+	}
+	product = product + temp;
+	return product;
+}
+
 
